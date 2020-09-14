@@ -14,9 +14,9 @@ class CreateCartsTable extends Migration
     public function up()
     {
         Schema::create('carts', function (Blueprint $table) {
-            $table->string('identifier')->primary()->unique();
-            $table->json('content')->nulllable();
-            $table->json('discount')->nullable();
+            $table->string('identifier')->primary();
+            $table->integer('discount_id')->nullable()->unsigned();
+            $table->foreign('discount_id')->references('id')->on('discounts');
             $table->timestamps();
         });
     }

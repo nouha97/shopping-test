@@ -25,4 +25,8 @@ class Cart extends Model
     {
         return $this->belongsToMany(Product::class)->withPivot(['qty','row_id']);
     }
+    public function discount()
+    {
+        return $this->belongsTo(Discount::class);
+    }
 }
