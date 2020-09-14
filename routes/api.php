@@ -19,10 +19,11 @@ use Illuminate\Support\Facades\Route;
         Route::post('create', '\App\Http\Controllers\CartController@create');
         Route::get('/', '\App\Http\Controllers\CartController@index');
         Route::get('{id}', '\App\Http\Controllers\CartController@show');
-        Route::put('{id}/update', '\App\Http\Controllers\CartController@update');
+        Route::put('{id}', '\App\Http\Controllers\CartController@update');
         Route::post('{id}/discount', '\App\Http\Controllers\CartController@discount');
         Route::delete('{id}', '\App\Http\Controllers\CartController@delete');
     });
+    //test
     Route::group(['prefix' => 'products'], function(){
         Route::post('create', '\App\Http\Controllers\ProductController@create');
 
