@@ -9,6 +9,7 @@ class Discount extends Model
 {
     use HasFactory;
 
+
     public function carts()
     {
         return $this->hasMany(Discount::class);

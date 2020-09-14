@@ -19,7 +19,7 @@ class Cart extends Model
      */
     protected $primaryKey = 'identifier';
 
-    protected $fillable = ['identifier','discount', 'content'];
+    protected $fillable = ['identifier','discount_id'];
 
     public function products()
     {

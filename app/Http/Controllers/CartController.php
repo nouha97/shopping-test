@@ -17,7 +17,7 @@ class CartController extends Controller
      */
     public function index()
     {
-        return response()->json(["message" => "Cart created successfully"], 200);
+        //return response()->json(["message" => "Cart created successfully"], 200);
     }
 
     /**
@@ -88,17 +88,26 @@ class CartController extends Controller
             "qty" => $item->pivot->qty,
             "price" => $item->price,
             "options" => $item->images_urls,
-            "tax" => $tax,
+            "tax" => ($tax * $item->price)/100,
             "subtotal" => getPrice($item->price,$item->pivot->qty,$tax),
             ];
+
             array_push($dataitems,$data);
+
+            //total sum calclated
             $sum=$sum+getPrice($item->price,$item->pivot->qty,$tax);
             }
-    $discount_info = Discount::where('id',$cart->discount_id)->pluck('discount_code','percentage_value');
-    if ($discount_info != null) {
-        $sum= $sum - $sum * ($discount_info->percentage_value/100);
+
+            //discount apply
+            if ($cart->discount_id != null){
+
+            $discount_info = Discount::where('id',$cart->discount_id)->pluck('discount_code','percentage_value');
+
+            $sum= $sum - $sum * ($discount_info->percentage_value/100);
+
     }
 
+    // cart content
             $Cartdata = [
 
                 "cart" => [
@@ -110,13 +119,14 @@ class CartController extends Controller
                         "value" => $discount_info->percentage_value,
                     ],
                         "summarry" => [
-                            "total" => $sum
+                            "total" => $sum,
+
                         ]
                 ]
 
         ];
 
-        return response()->json($cartData , 201);
+        return response()->json($cartData , 200);
     }
 
     public function getPrice($price,$qt,$tax)
@@ -160,12 +170,17 @@ class CartController extends Controller
 
     public function discount(Request $request, $id)
     {
+        $cart= Cart::where('identifier',$id)->get();
+        if($cart == null) {
+            return response()->json(["message" => "Cart not found"],404);
+        }
+
         $discount_id = Discount::where('discount_code', $request->discount_code)->get('id')->first();
         if ($discount_id == null) {
             return response()->json(["message" => "Discount code not found"], 404);
         }
         else {
-            $cart->discount = $discount_id;
+            $cart->discount_id = $discount_id;
             return  response()->json(["message" => "Discount code applied successfully "], 200);
         }
 
@@ -174,7 +189,7 @@ class CartController extends Controller
     public function delete(Request $request, $id)
     {
         $cart= Cart::where('identifier',$id)->get();
-        if($car == null) {
+        if($cart == null) {
             return response()->json(["message" => "Cart not found"],404);
         }
         $cart->products()->wherePivot('row_id',$request->row_id)->detach();
